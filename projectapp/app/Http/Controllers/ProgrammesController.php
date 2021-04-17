@@ -63,53 +63,7 @@ class ProgrammesController extends Controller
 
 
 
-    public function check(Request $request)
-    {
-        $this->validate($request, [
-            'check_out_date' => 'required',
-            'check_in_date' => 'required',
-        ]);
 
-        $check_in_date = $request->get('check_in_date');
-        $check_out_date = $request->get('check_out_date');
-        $hotel_id = $request->get('hotel_id');
-
-        $rooms = Room::whereNotIn('id', function ($query) use ($check_in_date, $check_out_date, $hotel_id) {
-            $query->from('reservations')
-                ->select('room_id')
-                ->where('check_out_date', '<=', $check_out_date)
-                ->where('check_in_date', '>=', $check_in_date)
-                ->where('hotel_id', $hotel_id);
-        })->where('hotel_id', $hotel_id)->get();
-
-        if (count($rooms) === 0) {
-            $request->session()->flash(
-                'flash.message.first',
-                ['type' => 'success', 'message' => 'Scuze, nu exista camere libere!']
-            );
-        } else {
-            if (Auth::check()) {
-                $reservation = new Reservation();
-                $reservation->check_in_date = $check_in_date;
-                $reservation->check_out_date = $check_out_date;
-                $reservation->room_id = $rooms[0]->id;
-                $reservation->user_id = Auth::User()->id;
-                $reservation->save();
-
-                $request->session()->flash(
-                    'flash.message.first',
-                    ['type' => 'success', 'message' => 'Felicitari! Rezervarea este activata!']
-                );
-            } else {
-                $request->session()->flash(
-                    'flash.message.first',
-                    ['type' => 'success', 'message' => 'Nu esti logat!']
-                );
-            }
-        }
-
-        return redirect()->back();
-    }
 
 
 
