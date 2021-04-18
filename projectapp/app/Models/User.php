@@ -29,6 +29,19 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function authenticated(Request $request, $user)
+    {
+
+        $role = $user->role;
+        $checkrole = explode(',', $role);
+        if (in_array('admin', $checkrole)) {
+            return redirect('admin');
+        } else {
+            return redirect('member');
+        }
+    }
+
+
     /**
      * The attributes that should be hidden for arrays.
      *
