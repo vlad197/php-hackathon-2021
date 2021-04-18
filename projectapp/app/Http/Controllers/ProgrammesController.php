@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Programmes;
+use http\Env\Response;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -73,18 +74,24 @@ class ProgrammesController extends Controller
         $this->validate($request, [
             'startingdate' => 'required',
             'endingdate' => 'required',
+            'programmes_id' => 'required',
+            'user_id' => 'required'
         ]);
 
         $startingdate = $request->get('startingdate');
         $endingdate = $request->get('endingdate');
         $programmes_id = $request->get('programmes_id');
+        $user_id = $request->get('user_id');
 
-        $rooms = Room::whereNotIn('id', function ($query) use ($startingdate, $endingdate, $programmes_id) {
+
+
+        $rooms = Room::whereNotIn('id', function ($query) use ($startingdate, $endingdate, $programmes_id, $user_id) {
             $query->from('programmes')
                 ->select('room_id')
                 ->where('endingdate', '<=', $endingdate)
                 ->where('startingdate', '>=', $startingdate)
-                ->where('programmes_id', $programmes_id);
+                ->where('programmes_id', $programmes_id)
+                ->where('$user_id', $user_id);
         })->where('programmes_id', $programmes_id)->get();
 
         if (count($rooms) === 0) {
@@ -113,16 +120,35 @@ class ProgrammesController extends Controller
             }
         }
 
+        if(empty($programmes_id) || empty($user_id))
+        {
+            return response()->json('Nu exista user sau programare');
+        }
+
+        if(!empty($programmes_id) || !empty($user_id))
+        {
+            return response()->json('Exista user sau programare');
+        }
+
+
+
+
+
+
         return redirect()->back();
     }
 
-    public function book($id)
-    {
-        $programmes = Programmes::with(['user'])->whereHas('room', function ($query) use ($id) {
-            $query->where('room_id', $id);
-        })->get();
+  //  public function book($id)
+  //  {
+  //      $programmes = Programmes::with(['user'])->whereHas('room', function ($query) use ($id) {
+   //         $query->where('room_id', $id);
+   //     })->get();
 
-    }
+  //  }
+
+
+
+
 
 
 
