@@ -20,13 +20,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::get('/programmes', [ProgrammesController::class, 'getIndex']);
 
-//Route::get('programmes','ProgrammesController@getIndex');
+
 Route::get('/programmes/{id}', [ProgrammesController::class, 'show']);
 
-//Route::get('programmes/{id}','ProgrammesController@show');
-Route::post('/programmes', [ProgrammesController::class, 'store']);
-//Route::post('programmes','ProgrammesController@store');
 
-//Route::put('programmes/{id}', 'ProgrammesController@update');
+Route::post('/programmes', [ProgrammesController::class, 'store']);
+
+Route::put('/programmes/{id}', [ProgrammesController::class,'update']);
+
 Route::delete('/programmes/{id}', [ProgrammesController::class, 'destroy']);
-//Route::delete('programmes/{id}', 'ProgrammesController@destroy');
+
+Route::post('/check',[ProgrammesController::class,'check']);
+

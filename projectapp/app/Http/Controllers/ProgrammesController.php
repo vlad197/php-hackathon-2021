@@ -24,8 +24,9 @@ class ProgrammesController extends Controller
 
     public function store(Request $request)
     {
+
         request()->validate([
-            'name' => 'required',
+            'name' => 'required|in:pilates,kangoojumps',
             'startingdate' => 'required',
             'endingdate' => 'required|date|after_or_equal:startingdate',
             'participants' => 'required',
@@ -41,6 +42,7 @@ class ProgrammesController extends Controller
     public function update(Request $request, $id)
     {
         request()->validate([
+
             'name' => 'required',
             'startingdate' => 'required',
             'endingdate' => 'required',
@@ -112,6 +114,14 @@ class ProgrammesController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function book($id)
+    {
+        $programmes = Programmes::with(['user'])->whereHas('room', function ($query) use ($id) {
+            $query->where('room_id', $id);
+        })->get();
+
     }
 
 
